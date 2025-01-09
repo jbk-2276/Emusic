@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        function startRecognition() {
+            const recognition = new (window.SpeechRecognition  || window.webkitSpeechRecognition)
+            recognition.lang = 'en-us';
+            recognition.interimResults = false;
+
+            recognition.onstart = () => {
+                document.getElementById("status").innerText = "Listening..";
+            };
+
+            recognition.onresult =(evene) => {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById("status").innerText = "Processing..";
+                sendVoiceToServer(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                document.getElementById("status").innerText = "Error occurred:" + event.error;
+            };
+            recognition.start();
+         }
+
+         function sendVoiceToServer(voiceText) {
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            fetch("/process_voice/", {
+                method: "POST",
+                headers: {
+                    "Content Type": "application/x-www-form-urlencoded",
+                    "X-CSRFToken" : csrfToken,
+                },
+                body: new URLSearchParams({ voice_text: voiceText }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("status").innerText = data.message;
+            })
+            .catch(error => {
+                document.getElementByid("status").innerText = "Error: " + error;
+            });
+         }
+    </script>
+</head>
+<body>
+    <h1>Search your Songs Here</h1>
+    <button onclick="startRecognition()">Speack up Here</button>
+    <p id="status">Click the button to start.</p>
+
+    <form action="" method="POST">
+        {% csrf_token %}
+    </form>
+    
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search</title>
+  </head>
+  <body>
+    <div class="container mt-5">
+      <h2>Search Results for: "{{ query }}"</h2>
+
+      {% if results %} {% if results.songs %}
+      <div class="section mb-5">
+        <h3>Songs</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          {% for song in results.songs %}
+          <div class="col">
+            <div class="card h-100">
+              <img
+                src="{{ song.album.images.0.url }}"
+                class="card-img-top"
+                alt="Song Image"
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ song.name }}</h5>
+                <p class="card-text">{{ song.artists.0.name }}</p>
+                <!-- Redirect to Spotify song -->
+                <a
+                  href="{{ song.external_urls.spotify }}"
+                  class="btn btn-primary"
+                  target="_blank"
+                  >Listen on Spotify</a
+                >
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <p>No songs found.</p>
+      {% endif %} {% if results.artists %}
+      <div class="section mb-5">
+        <h3>Artists</h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          {% for artist in results.artists %}
+          <div class="col">
+            <div class="card h-100">
+              <img
+                src="{{ artist.images.0.url }}"
+                class="card-img-top"
+                alt="Artist Image"
+              />
+              <div class="card-body">
+                <h5 class="card-title">{{ artist.name }}</h5>
+                <p class="card-text">Followers: {{ artist.followers.total }}</p>
+                <!-- Redirect to Artist's Spotify Page -->
+                <a
+                  href="{{ artist.external_urls.spotify }}"
+                  class="btn btn-primary"
+                  target="_blank"
+                  >Go to Artist</a
+                >
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <p>No artists found.</p>
+      {% endif %} {% else %}
+      <p>No results found for your query.</p>
+      {% endif %}
+    </div>
+  </body>
+</html>
